@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsStrongPassword, Length,IsNotEmpty } from "class-validator";
+import { IsEmail, IsString, IsStrongPassword, Length,IsNotEmpty, IsOptional, IsDateString } from "class-validator";
 export class CreateUserDto {
      
     @IsString()// deve ser uma string  
@@ -21,4 +21,7 @@ export class CreateUserDto {
     })
     password: string;
 
+    @IsOptional() // campo ñ obrigatório
+    @IsDateString() // verifica se a string contém uma data 
+    birthAt: string;
 }
