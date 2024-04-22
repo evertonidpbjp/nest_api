@@ -1,4 +1,5 @@
-import { IsEmail, IsString, IsStrongPassword, Length,IsNotEmpty, IsOptional, IsDateString } from "class-validator";
+import { IsEmail, IsString, IsStrongPassword, Length,IsNotEmpty, IsOptional, IsDateString, IsEnum } from "class-validator";
+import { Role } from "src/enums/role.enum";
 export class CreateUserDto {
      
     @IsString()// deve ser uma string  
@@ -24,4 +25,9 @@ export class CreateUserDto {
     @IsOptional() // campo ñ obrigatório
     @IsDateString() // verifica se a string contém uma data 
     birthAt: string;
+
+    @IsOptional()  
+    @IsEnum(Role)  // campo deve ter um dos valores definidos no Enum Role 
+    role: number;
+     
 }
