@@ -17,7 +17,7 @@ import { FileModule } from "src/file/file.module";
   ],
     controllers: [AuthController],
     providers: [AuthService],
-    exports: [AuthService]
+    exports: [AuthService, AuthRegisterDto]
     
 })
 export class AuthModule{

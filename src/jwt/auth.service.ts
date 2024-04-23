@@ -4,6 +4,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { AuthRegisterDto } from "./dto/auth.register.dto";
 import { User } from "@prisma/client";
 import * as bcrypt from 'bcrypt';
+import { MailerService } from "@nestjs-modules/mailer";
 
 @Injectable()
 export class AuthService{
@@ -11,7 +12,8 @@ export class AuthService{
     constructor(
         
         private readonly jwt: JwtService,
-        private readonly prisma: PrismaService
+        private readonly prisma: PrismaService,
+        private readonly mailer: MailerService
 
 
     ) {}
@@ -48,9 +50,10 @@ export class AuthService{
            },
             {
               expiresIn: "7 days",   // tempo q o token leva para expirar
-              subject: String(user.id), // outros dados extras
+             // subject: String(user.id), // outros dados extras          
               issuer: 'login',
               audience: 'users'
+            
             })
        }
     }
@@ -59,8 +62,9 @@ export class AuthService{
     checkToken(token: string){
        try{
             const data =   this.jwt.verify(token, {
+                issuer: 'login' ,
                 audience: 'users',         // esses dados (audience e issuer e outros q vc pode definir) devem ser os mesmo do createToken
-                issuer: 'login' 
+              
             })
             return (data)
        } catch(err) {
@@ -74,8 +78,9 @@ export class AuthService{
 
         try{
             const data = this.jwt.verify(token, {
+                issuer: 'login',
                 audience: 'users',
-                issuer: 'login'
+              
             })
              return (data)
 
@@ -121,29 +126,74 @@ export class AuthService{
             throw new UnauthorizedException('Email inválido')
         }
 
-        return true; // se usuário existir, retorna true e envia o link p/ e-mail cadastrado do usuário
+    
        
-        // implementar função de envio de e-mail
+         // Enviando email para usuário com o token p/ redefinir a senha (em produção, o token estará no link do e-mail)
+
+         // gera token q usuário ao acessar e-mail de recuperação precisará informar p/ acessar a tela de recuperação de senha:
+         const token  = this.jwt.sign({
+            id: user.id
+         },
+          
+         {
+            expiresIn: "30 minutes",   // tempo q o token leva para expirar
+          //  subject: String(user.id), // outros dados extras p/ validar o token (comentei essa linha, pois ela altera o formato do token, se for usar, certifique-se de colocar esse mesmo campo em todos os métodos q geram token)
+            issuer: 'login',
+            audience: 'users'
+         }
+        
+        )
+
+       // envia e-mail
+        await this.mailer.sendMail({
+            subject: 'Recuperação de senha',
+            to: 'evertonid@ymail.com',
+            template: 'forget',
+            context: {
+                name: user.name,
+                token: token
+            }
+
+        });
+
+        return true; // se usuário existir, retorna true e envia o link p/ e-mail cadastrado do usuário
    }
    
    // após acessar o link, usuário precisa informar nova senha e o token enviado para o e-mail. Assim redefinirá a senha
-   async reset (novaSenha: string, token: string) {
-     // validar token (pendente)
+   async reset (password: string, tokenJwt: string) {
+    
+    // verifica se token informado é válido
+    try {
+        const data: any =  this.jwt.verify(tokenJwt, {
+            issuer: 'login', // elementos de validação (foram definidos com o mesmo valor no método forget)
+            audience: 'users'
+         });
 
-    const id = 1; // aqui ficará o id do usuário extraído do token após a validação
-   
+         // o token criado no forget continha o id do usuário incluso, aqui ele testa se o id é de fato um number
+         if(isNaN(Number(data.id))) {
+            throw new BadRequestException('Token é inválido')
+         }
+     
+      const salt =  await bcrypt.genSalt();
+      password =   await bcrypt.hash(password, salt)
+
     // atualiza o password com a nova senha, buscando pelo id extraído do token (o token contém o id do usuário), retorna um user
      const user = await this.prisma.user.update({
         where: {                     
-            id: id 
+            id: Number(data.id) 
         },
         data: {
-            password: novaSenha
+            password: password
         }
     });
     
     // após atualizar a senha, ele já faz auto o login/autenticação, gerando o token de acess (outra opção seria redirecionar o usuário para a tela de login somente)
     return  this.createToken(user);
+
+    }catch(e) { 
+        throw new BadRequestException('Token inválido')
+    }
+
 
 
    }
