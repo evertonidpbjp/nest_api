@@ -1,11 +1,11 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod, forwardRef } from "@nestjs/common";
 import { UserController } from "./user.controller";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { PrismaModule } from "src/prisma/prisma.module";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaModule } from "../prisma/prisma.module";
+import { PrismaService } from "../prisma/prisma.service";
 import { UserService } from "./user.service";
-import { CheckIdMiddleware } from "src/middlewares/check.id.middleware";
-import { AuthModule } from "src/jwt/auth.module";
+import { CheckIdMiddleware } from "../middlewares/check.id.middleware";
+import { AuthModule } from "../jwt/auth.module";
 
 @Module({
     imports: [CreateUserDto, PrismaModule, forwardRef(() => AuthModule)],

@@ -24,10 +24,10 @@ export class CreateUserDto {
 
     @IsOptional() // campo ñ obrigatório
     @IsDateString() // verifica se a string contém uma data 
-    birthAt: string;
+    birthAt?: string;
 
     @IsOptional()  
-    @IsEnum(Role)  // campo deve ter um dos valores definidos no Enum Role 
-    role: number;
+   // @IsEnum(Role)  // campo deve ter um dos valores definidos no Enum Role 
+    role?: number;
      
 }

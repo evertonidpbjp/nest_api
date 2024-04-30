@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdatePutUserDto } from "./dto/update-put-user.dto";
 import { UpdatePatchUserDto } from "./dto/update-patch-user.dto";
+import { Role } from "../enums/role.enum";
 import { User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
@@ -22,7 +23,7 @@ export class UserService{
                 email: email,
                 password: password,
                 birthAt: birthAt? new Date(birthAt) : "",
-                role: role
+                role: role ? Number(role) : null
             },
 
             select: {

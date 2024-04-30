@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtModule, JwtService } from "@nestjs/jwt";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { AuthRegisterDto } from "./dto/auth.register.dto";
 import { User } from "@prisma/client";
 import * as bcrypt from 'bcrypt';
 import { MailerService } from "@nestjs-modules/mailer";
+import { Role } from "../enums/role.enum";
 
 @Injectable()
 export class AuthService{
@@ -32,6 +33,7 @@ export class AuthService{
             email: body.email,
             password: body.password,
             birthAt: body.birthAt ? new Date(body.birthAt) : null,
+            role: body.role ? Number(body.role) : Role.User
          },
 
          select: {
@@ -193,9 +195,6 @@ export class AuthService{
     }catch(e) { 
         throw new BadRequestException('Token inválido')
     }
-
-
-
    }
 
 
