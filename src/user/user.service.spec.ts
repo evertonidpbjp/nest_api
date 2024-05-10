@@ -54,7 +54,7 @@ beforeEach(async () => {
     jest.mock('@prisma/client');
     const mockPrisma = jest.mocked('@prisma/client');
     
-    mockPrisma.user.findMany.mockImplementation(() => Promise.resolve(ListUserDtoTest));    
+    mockPrisma.findMany.mockImplementation(() => Promise.resolve(ListUserDtoTest));    
     
     
       test('Test method: List', async () => {

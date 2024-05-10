@@ -1,6 +1,6 @@
 export const CreateUserDtoTest = {
-    name: "Bob",
-    email: "bob@gmail.com",
+    name: "Everton",
+    email: "evertonidpbjp@gmail.com",
     password:"123456aA@",
     birthAt: "2000-05-05",
     role: 1,

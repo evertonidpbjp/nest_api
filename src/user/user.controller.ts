@@ -22,7 +22,7 @@ export class UserController{
   // faz um post, a variável @body extrai do corpo da requisição passado via form url encoded, no retorno ele exibe o que foi enviado 
   @UseInterceptors(LogInterceptor) // interceptador q calcula o tempo de execução do post
   @Roles(Role.Admin) // role enum + decorator roles q protege a rota: somente usuários admin podem acessar a rota.
-  @SkipThrottle() // ignora as regras globais de limite de acesso
+  @SkipThrottle()  // ignora as regras globais de limite de acesso
   @Post()
   async create(@Body() {name, email, password, birthAt, role}: CreateUserDto){ // posso indicar cada campo separadamente ou usar somente body
      return await this.user.create({name, email, password, birthAt, role})

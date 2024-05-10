@@ -17,7 +17,7 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter'
       limit: 10,
   //    ignoreUserAgents: [/googlebot/gi] // no caso de seu site ser indexado pelo google, vc pode liberar para q o bot acesse mais de 10 vezes
     }]),
-    forwardRef(() => UserModule), //forward ref evita a depência cílica
+    forwardRef(() => UserModule), //forward ref evita a depência cíclica
     forwardRef(() => AuthModule),
     MailerModule.forRoot({ // módulo de envio e-mail
      // indica por qual servidor de e-mail será enviado (vem depois do @) + o usuário de email (vem antes dos dois pontos) + senha do usuário q enviará (fica entre os dois pontos e o @)
